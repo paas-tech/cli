@@ -15,6 +15,7 @@ var rootCmd = &cobra.Command{
 
 🔗 Find more informations at: TBA
 	`,
+	SilenceUsage: true,
 }
 
 func Execute() {
@@ -22,4 +23,8 @@ func Execute() {
 	if err != nil {
 		os.Exit(1)
 	}
+}
+
+func init() {
+	rootCmd.AddGroup(&cobra.Group{ID: "account", Title: "Account Commands"})
 }
