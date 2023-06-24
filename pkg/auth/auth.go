@@ -1,6 +1,6 @@
 package auth
 
-func Login(username string, password string) error {
+func Login(email string, password string) error {
 	return nil
 }
 
