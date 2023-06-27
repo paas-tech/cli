@@ -13,7 +13,7 @@ var rootCmd = &cobra.Command{
 🍉 PaaSTech CLI is the official tool to manage and operate your 
    applications and deployments on the PaaSTech platform.
 
-🔗 Find more informations at: TBA
+🔗 Find more informations at: https://paastech.cloud/
 	`,
 	SilenceUsage: true,
 }
@@ -26,5 +26,6 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.AddGroup(&cobra.Group{ID: "account", Title: "Account Commands"})
+	rootCmd.AddGroup(&cobra.Group{ID: "account", Title: "Account Commands:"})
+	rootCmd.AddGroup(&cobra.Group{ID: "project", Title: "Project Commands:"})
 }
