@@ -18,7 +18,7 @@ var initCmd = &cobra.Command{
 
 		git, err := git.PlainOpen(".")
 		if err != nil {
-			return errors.New("No git repository found in current directory")
+			return errors.New("no git repository found in current directory")
 		}
 
 		return project.InitProject(git)

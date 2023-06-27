@@ -13,7 +13,7 @@ var rootCmd = &cobra.Command{
 🍉 PaaSTech CLI is the official tool to manage and operate your 
    applications and deployments on the PaaSTech platform.
 
-🔗 Find more informations at: https://paastech.cloud/
+🔗 Find more information at: https://paastech.cloud/
 	`,
 	SilenceUsage: true,
 }
