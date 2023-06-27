@@ -28,4 +28,5 @@ func Execute() {
 func init() {
 	rootCmd.AddGroup(&cobra.Group{ID: "account", Title: "Account Commands:"})
 	rootCmd.AddGroup(&cobra.Group{ID: "project", Title: "Project Commands:"})
+	rootCmd.AddGroup(&cobra.Group{ID: "deployment", Title: "Deployment Commands:"})
 }
