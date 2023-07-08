@@ -1,7 +1,6 @@
 package auth_test
 
 import (
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -17,7 +16,6 @@ func TestLogin(t *testing.T) {
 		if r.Method != http.MethodPost || r.URL.Path != "/auth/login" {
 			t.Errorf("Expected POST request to /auth/login, got %s request to %s", r.Method, r.URL.Path)
 		}
-		fmt.Println(r.Method, r.URL.Path, r.Body)
 
 		// Check the request body
 		expectedBody := `{"email":"test@example.com","password":"password123"}`
