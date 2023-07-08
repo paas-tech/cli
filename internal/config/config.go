@@ -2,17 +2,33 @@ package config
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
+	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/spf13/viper"
 )
 
-// Load the auth config (jwt) from $HOME/.config/paastech/auth.yaml
-func LoadAuthConfig() error {
+type JWTInfos struct {
+	Username       string
+	ExpirationTime time.Time
+}
+
+// Set and return auth config as config file
+func authConfigFile() string {
 	// Define config path
 	authConfigFile := filepath.Join(os.Getenv("HOME"), ".config", "paastech", "auth.yaml")
 	viper.SetConfigFile(authConfigFile)
+	viper.ReadInConfig()
+	return authConfigFile
+}
+
+// Load the auth config (jwt) from $HOME/.config/paastech/auth.yaml
+func LoadAuthConfig() error {
+	// Set auth config file as config
+	authConfigFile := authConfigFile()
 
 	// Check if the auth.yaml file exists, if not, create it
 	if _, err := os.Stat(authConfigFile); os.IsNotExist(err) {
@@ -33,13 +49,37 @@ func LoadAuthConfig() error {
 
 // Set the jwt in config file
 func SetJWT(jwt string) {
-	// Define config path
-	authConfigFile := filepath.Join(os.Getenv("HOME"), ".config", "paastech", "auth.yaml")
-	viper.SetConfigFile(authConfigFile)
+	// Set auth config file as config
+	authConfigFile()
 
 	// Change jwt value in config file
 	viper.Set("jwt", jwt)
 	viper.WriteConfig()
+}
+
+// Extract payload from jwt and return it as UserInfos struct
+func ExtractJWTInfos() (JWTInfos, error) {
+	// Set auth config file as config
+	authConfigFile()
+
+	// Get jwt from config
+	tokenString := viper.GetString("jwt")
+	if tokenString == "" {
+		return JWTInfos{}, errors.New("Not logged in")
+	}
+
+	// Parse payload
+	token, _, err := new(jwt.Parser).ParseUnverified(tokenString, jwt.MapClaims{})
+	if err != nil {
+		fmt.Println(tokenString)
+		return JWTInfos{}, errors.New("Impossible to parse user jwt")
+	}
+	claims := token.Claims.(jwt.MapClaims)
+
+	return JWTInfos{
+		Username:       claims["username"].(string),
+		ExpirationTime: time.Unix(int64(claims["exp"].(float64)), 0),
+	}, nil
 }
 
 // Create the auth config file in the home config directory

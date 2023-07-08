@@ -3,7 +3,7 @@ module github.com/paastech-cloud/cli
 go 1.20
 
 require (
-	github.com/mitchellh/go-homedir v1.1.0
+	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.16.0
 	golang.org/x/crypto v0.10.0

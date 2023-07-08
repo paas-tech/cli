@@ -18,8 +18,7 @@ var (
 var loginCmd = &cobra.Command{
 	GroupID: "account",
 	Use:     "login",
-	Short:   "Log in to PaaSTech.cloud",
-	Long:    "Log in to PaaSTech.cloud",
+	Short:   "Log in to PaaSTech",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		email, _ := cmd.Flags().GetString("email")
 		password, _ := cmd.Flags().GetString("password")
