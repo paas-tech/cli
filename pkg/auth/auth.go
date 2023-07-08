@@ -52,11 +52,3 @@ func Login(email string, password string) (string, error) {
 
 	return jwt.AccessToken, err
 }
-
-func Logout() error {
-	return nil
-}
-
-func Status() (string, error) {
-	return "status not implemented yet", nil
-}
