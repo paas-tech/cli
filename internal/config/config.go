@@ -48,11 +48,12 @@ func LoadAuthConfig() error {
 }
 
 // Set the jwt in config file
-func SetJWT(jwt string) {
+func SetAuth(server string, jwt string) {
 	// Set auth config file as config
 	authConfigFile()
 
-	// Change jwt value in config file
+	// Change server and jwt value in config file
+	viper.Set("server", server)
 	viper.Set("jwt", jwt)
 	viper.WriteConfig()
 }
@@ -92,6 +93,7 @@ func createAuthConfig(path string) error {
 
 	// Write config with no real value
 	viper.Set("jwt", "")
+	viper.Set("server", "")
 	err = viper.WriteConfigAs(path)
 	if err != nil {
 		return err

@@ -20,7 +20,7 @@ var logoutCmd = &cobra.Command{
 		}
 
 		// Save empty jwt in auth conf
-		config.SetJWT("")
+		config.SetAuth("", "")
 		fmt.Println("🚪 Logging out")
 
 		return nil

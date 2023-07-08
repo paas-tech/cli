@@ -8,8 +8,6 @@ import (
 	"github.com/paastech-cloud/cli/pkg/utils"
 )
 
-const base_url = "http://localhost:3000/auth"
-
 type loginRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
@@ -20,7 +18,7 @@ type loginResponse struct {
 }
 
 // Send a login request to the PaasTech API and returns the Access Token if successful
-func Login(email string, password string) (string, error) {
+func Login(baseURL string, email string, password string) (string, error) {
 	// Create JSON request body
 	request, err := json.Marshal(loginRequest{
 		Email:    email,
@@ -31,7 +29,7 @@ func Login(email string, password string) (string, error) {
 	}
 
 	// POST request to API
-	resp, err := http.Post(base_url+"/login", "application/json", bytes.NewReader(request))
+	resp, err := http.Post(baseURL+"/auth/login", "application/json", bytes.NewReader(request))
 	if err != nil {
 		return "", err
 	}

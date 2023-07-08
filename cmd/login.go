@@ -13,6 +13,7 @@ import (
 var (
 	email    string
 	password string
+	server   string
 )
 
 var loginCmd = &cobra.Command{
@@ -37,9 +38,14 @@ var loginCmd = &cobra.Command{
 			return errors.New("Email and password cannot be empty. Please try again.")
 		}
 
+		// Use PaaSTech API server by default
+		if server == "" {
+			server = "https://api.paastech.cloud"
+		}
+
 		// Send login request
 		fmt.Printf("🔐 Logging in as %s\n", email)
-		jwt, err := auth.Login(email, password)
+		jwt, err := auth.Login(server, email, password)
 		if err != nil {
 			return err
 		}
@@ -51,7 +57,7 @@ var loginCmd = &cobra.Command{
 		}
 
 		// Save jwt in auth conf
-		config.SetJWT(jwt)
+		config.SetAuth(server, jwt)
 		fmt.Println("✅ Login successful")
 
 		return nil
@@ -61,6 +67,7 @@ var loginCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(loginCmd)
 
+	loginCmd.Flags().StringVarP(&server, "server", "", "", "Server URL")
 	loginCmd.Flags().StringVarP(&email, "email", "e", "", "Email")
 	loginCmd.Flags().StringVarP(&password, "password", "p", "", "Password")
 	loginCmd.MarkFlagsRequiredTogether("email", "password")

@@ -6,6 +6,7 @@ import (
 
 	"github.com/paastech-cloud/cli/internal/config"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var accountCmd = &cobra.Command{
@@ -19,6 +20,7 @@ var accountCmd = &cobra.Command{
 		}
 
 		fmt.Println("👤 You are logged in as: " + jwt.Username)
+		fmt.Println("🌐 Server: " + viper.GetString("server"))
 		timeDiff := jwt.ExpirationTime.Sub(time.Now())
 		if timeDiff > 0 {
 			fmt.Println(
