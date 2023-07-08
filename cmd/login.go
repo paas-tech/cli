@@ -22,6 +22,7 @@ var loginCmd = &cobra.Command{
 		email, _ := cmd.Flags().GetString("email")
 		password, _ := cmd.Flags().GetString("password")
 
+		// ask for email and password if not present in flags
 		if len(email) == 0 || len(password) == 0 {
 			fmt.Print("Email: ")
 			fmt.Scan(&email)
@@ -32,9 +33,10 @@ var loginCmd = &cobra.Command{
 			fmt.Print("\n")
 		}
 
-		fmt.Printf("🔐 Logging in as %s...\n", email)
-		err := auth.Login(email, password)
+		fmt.Printf("🔐 Logging in as %s\n", email)
+		jwt, err := auth.Login(email, password)
 		if err == nil {
+			fmt.Println("jwt: " + jwt)
 			fmt.Println("✅ Login successful")
 		}
 		return err
