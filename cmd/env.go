@@ -2,9 +2,7 @@ package cmd
 
 import (
 	"errors"
-	"fmt"
 
-	"github.com/paastech-cloud/cli/pkg/project"
 	"github.com/spf13/cobra"
 )
 
@@ -25,7 +23,7 @@ var addEnvCmd = &cobra.Command{
 	Short: "Add an environment variable to the current projet",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return project.AddEnvVar(args[0])
+		return nil
 	},
 }
 
@@ -33,11 +31,6 @@ var lsEnvCmd = &cobra.Command{
 	Use:   "ls",
 	Short: "List environment variables of the current projet",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		vars, err := project.ListEnvVar()
-		if err != nil {
-			return err
-		}
-		fmt.Print(vars)
 		return nil
 	},
 }
@@ -47,7 +40,7 @@ var rmEnvCmd = &cobra.Command{
 	Short: "Remove an environment variable from the current projet",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return project.RmEnvVar(args[0])
+		return nil
 	},
 }
 

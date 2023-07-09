@@ -1,27 +1,29 @@
 package cmd
 
 import (
-	"errors"
 	"fmt"
 
-	"github.com/go-git/go-git/v5"
+	"github.com/paastech-cloud/cli/internal/config"
 	"github.com/paastech-cloud/cli/pkg/project"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var initCmd = &cobra.Command{
 	GroupID: "project",
-	Use:     "init",
+	Use:     "init [Project Name]",
 	Short:   "Initialize a project",
+	Args:    cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		fmt.Println("Initializing a new project")
 
-		git, err := git.PlainOpen(".")
+		config.LoadAuthConfig()
+		project, err := project.CreateProject(viper.GetString("server"), viper.GetString("jwt"), args[0])
 		if err != nil {
-			return errors.New("no git repository found in current directory")
+			return err
 		}
-
-		return project.InitProject(git)
+		fmt.Println("Project " + project.Name + " created.")
+		return nil
 	},
 }
 

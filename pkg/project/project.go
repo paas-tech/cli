@@ -1,28 +1,98 @@
 package project
 
-import "github.com/go-git/go-git/v5"
+import (
+	"bytes"
+	"encoding/json"
+	"net/http"
+	"time"
 
-func InitProject(git *git.Repository) error {
-	// TODO: to implement when API is ready
-	return nil
+	"github.com/paastech-cloud/cli/pkg/utils"
+)
+
+type projectCreationRequest struct {
+	Name string `json:"name"`
 }
 
-func DeleteProject(git *git.Repository) error {
-	// TODO: to implement when API is ready
-	return nil
+type Project struct {
+	Id        string    `json:"id"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
 }
 
-func AddEnvVar(envVar string) error {
-	// TODO: to implement when API is ready
-	return nil
+// Send a project creation request to the PaaSTech API and returns a Project object if successful
+func CreateProject(baseURL string, accessToken string, name string) (Project, error) {
+	// Create JSON request body
+	request, err := json.Marshal(projectCreationRequest{
+		Name: name,
+	})
+	if err != nil {
+		return Project{}, err
+	}
+
+	// Create POST request to API
+	req, err := http.NewRequest(http.MethodPost, baseURL+"/projects", bytes.NewReader(request))
+	if err != nil {
+		return Project{}, err
+	}
+
+	// Add access token as Bearer token in headers
+	req.Header.Add("Authorization", "Bearer "+accessToken)
+	req.Header.Add("Content-Type", "application/json")
+
+	// Make request
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return Project{}, err
+	}
+	defer resp.Body.Close()
+
+	// Check if the response is an error
+	err = utils.Error(resp)
+	if err != nil {
+		return Project{}, err
+	}
+
+	// Parse JSON body
+	var project Project
+	err = json.NewDecoder(resp.Body).Decode(&project)
+	if err != nil {
+		return Project{}, err
+	}
+
+	return project, nil
 }
 
-func ListEnvVar() (string, error) {
-	// TODO: to implement when API is ready
-	return "", nil
-}
+func DeleteProject(baseURL string, accessToken string, projectId string) error {
+	// Create DELETE request to API
+	req, err := http.NewRequest(http.MethodDelete, baseURL+"/projects/"+projectId, nil)
+	if err != nil {
+		return err
+	}
 
-func RmEnvVar(envVar string) error {
-	// TODO: to implement when API is ready
+	// Add access token as Bearer token in headers
+	req.Header.Add("Authorization", "Bearer "+accessToken)
+	req.Header.Add("Content-Type", "application/json")
+
+	// Make request
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	// Check if the response is an error
+	err = utils.Error(resp)
+	if err != nil {
+		return err
+	}
+
+	// Parse JSON body
+	var project Project
+	err = json.NewDecoder(resp.Body).Decode(&project)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
