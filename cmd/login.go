@@ -3,6 +3,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/paastech-cloud/cli/internal/config"
 	"github.com/paastech-cloud/cli/pkg/auth"
@@ -41,6 +42,8 @@ var loginCmd = &cobra.Command{
 		// Use PaaSTech API server by default
 		if server == "" {
 			server = "https://api.paastech.cloud"
+		} else {
+			server = strings.TrimSuffix(server, "/")
 		}
 
 		// Send login request
