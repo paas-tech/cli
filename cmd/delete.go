@@ -5,10 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/paastech-cloud/cli/pkg/project"
 	"github.com/paastech-cloud/cli/pkg/utils"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var deleteCmd = &cobra.Command{
@@ -21,7 +19,7 @@ var deleteCmd = &cobra.Command{
 		// confirmation
 		stdin := bufio.NewReader(os.Stdin)
 		if utils.ConfirmationPrompt(stdin) {
-			return project.DeleteProject(viper.GetString("server"), viper.GetString("jwt"), "todo")
+			// return project.DeleteProject(viper.GetString("server"), viper.GetString("jwt"), "todo")
 		}
 
 		return nil

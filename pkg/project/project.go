@@ -13,6 +13,10 @@ type projectCreationRequest struct {
 	Name string `json:"name"`
 }
 
+type projectCreationResponse struct {
+	Content Project `json:"content"`
+}
+
 type Project struct {
 	Id        string    `json:"id"`
 	Name      string    `json:"name"`
@@ -54,18 +58,18 @@ func CreateProject(baseURL string, accessToken string, name string) (Project, er
 	}
 
 	// Parse JSON body
-	var project Project
-	err = json.NewDecoder(resp.Body).Decode(&project)
+	var res projectCreationResponse
+	err = json.NewDecoder(resp.Body).Decode(&res)
 	if err != nil {
 		return Project{}, err
 	}
 
-	return project, nil
+	return res.Content, nil
 }
 
-func DeleteProject(baseURL string, accessToken string, projectId string) error {
+func (p *Project) Delete(baseURL string, accessToken string) error {
 	// Create DELETE request to API
-	req, err := http.NewRequest(http.MethodDelete, baseURL+"/projects/"+projectId, nil)
+	req, err := http.NewRequest(http.MethodDelete, baseURL+"/projects/"+p.Id, nil)
 	if err != nil {
 		return err
 	}
