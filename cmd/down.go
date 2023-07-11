@@ -6,16 +6,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var destroyCmd = &cobra.Command{
+var downCmd = &cobra.Command{
 	GroupID: "deployment",
-	Use:     "destroy",
-	Short:   "Destroy a deployment",
+	Use:     "down",
+	Short:   "Stop a deployment",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		fmt.Print("Destroying deployment")
+		fmt.Print("Stopping deployment")
 		return nil
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(destroyCmd)
+	rootCmd.AddCommand(downCmd)
 }
