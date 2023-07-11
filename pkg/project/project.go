@@ -18,10 +18,10 @@ type projectCreationResponse struct {
 }
 
 type Project struct {
-	Id        string    `json:"id"`
-	Name      string    `json:"name"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
+	Id        string    `json:"id"        yaml:"id"`
+	Name      string    `json:"name"      yaml:"name"`
+	CreatedAt time.Time `json:"createdAt" yaml:"createdat"`
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedat"`
 }
 
 // Send a project creation request to the PaaSTech API and returns a Project object if successful
@@ -87,13 +87,6 @@ func (p *Project) Delete(baseURL string, accessToken string) error {
 
 	// Check if the response is an error
 	err = utils.Error(resp)
-	if err != nil {
-		return err
-	}
-
-	// Parse JSON body
-	var project Project
-	err = json.NewDecoder(resp.Body).Decode(&project)
 	if err != nil {
 		return err
 	}
