@@ -4,13 +4,14 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strings"
 )
 
 // Structure of an error response from the API
 type errorResponse struct {
-	Message    string `json:"message"`
-	Error      string `json:"error"`
-	StatusCode int    `json:"statusCode"`
+	Message    interface{} `json:"message"`
+	Error      string      `json:"error"`
+	StatusCode int         `json:"statusCode"`
 }
 
 // Returns an error following the HTTP response code:
@@ -28,8 +29,16 @@ func Error(resp *http.Response) error {
 		if err != nil {
 			return err
 		}
-		return errors.New(respErr.Message)
 
+		// switch case to fix messages being either an array or a string
+		switch msg := respErr.Message.(type) {
+		case string:
+			return errors.New(msg)
+		case []string:
+			return errors.New(strings.Join(msg, ", "))
+		}
+
+		return errors.New("Unknown error")
 	// handle 4xx errors
 	case resp.StatusCode >= 500 && resp.StatusCode < 600:
 		// handles 5xx errors
