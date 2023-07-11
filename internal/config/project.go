@@ -22,12 +22,9 @@ func LoadProjectConfig() (*viper.Viper, error) {
 
 	cfg := viper.New()
 
-	// Check if the auth.yaml file exists, if not, create it
+	// Check if the paastch.yaml file exists
 	if _, err := os.Stat(projectConfigFile); os.IsNotExist(err) {
-		err = createProjectConfig(cfg, projectConfigFile)
-		if err != nil {
-			return nil, err
-		}
+		return nil, errors.New("Project is not initialized")
 	}
 
 	cfg.SetConfigFile(projectConfigFile)
@@ -41,13 +38,32 @@ func LoadProjectConfig() (*viper.Viper, error) {
 	return cfg, nil
 }
 
+func ProjectExists() bool {
+	// Set project config file as config
+	projectConfigFile := filepath.Join(".", "paastech.yaml")
+
+	// Check if the paastch.yaml file exists
+	if _, err := os.Stat(projectConfigFile); os.IsNotExist(err) {
+		return false
+	}
+
+	return true
+}
+
 // Create the project config file in the current directory
-func createProjectConfig(cfg *viper.Viper, path string) error {
+func CreateProjectConfig() error {
+	// Set project config file as config
+	projectConfigFile := filepath.Join(".", "paastech.yaml")
+
+	cfg := viper.New()
+
 	// Create the file in current directory
-	_, err := os.Create(filepath.Join(path))
+	_, err := os.Create(filepath.Join(projectConfigFile))
 	if err != nil {
 		return errors.New("Failed to create paastech.yaml config file")
 	}
+
+	cfg.SetConfigFile(projectConfigFile)
 
 	// Write config with no real value
 	cfg.Set("project", "")
@@ -59,7 +75,7 @@ func createProjectConfig(cfg *viper.Viper, path string) error {
 		Buildpack: "",
 		Env:       []string{},
 	})
-	err = cfg.WriteConfigAs(path)
+	err = cfg.WriteConfigAs(projectConfigFile)
 	if err != nil {
 		return err
 	}

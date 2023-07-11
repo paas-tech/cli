@@ -40,6 +40,18 @@ func LoadAuthConfig() (*viper.Viper, error) {
 	return cfg, nil
 }
 
+// Returns a boolean based on if the user is logged in
+func IsAuthenticated(cfg *viper.Viper) (bool, error) {
+	jwt, err := ExtractJWTInfos(cfg)
+	if err != nil {
+		return false, err
+	}
+
+	timeDiff := jwt.ExpirationTime.Sub(time.Now())
+
+	return timeDiff > 0, nil
+}
+
 // Extract payload from jwt and return it as UserInfos struct
 func ExtractJWTInfos(cfg *viper.Viper) (JWTInfos, error) {
 	// Get jwt from config

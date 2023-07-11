@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/paastech-cloud/cli/internal/config"
@@ -21,7 +22,24 @@ var initCmd = &cobra.Command{
 			return err
 		}
 
+		connected, err := config.IsAuthenticated(userCfg)
+		if err != nil {
+			return err
+		}
+		if !connected {
+			return errors.New("Not logged in")
+		}
+
+		if config.ProjectExists() {
+			return errors.New("Project already exists")
+		}
+
 		project, err := project.CreateProject(userCfg.GetString("server"), userCfg.GetString("jwt"), args[0])
+		if err != nil {
+			return err
+		}
+
+		err = config.CreateProjectConfig()
 		if err != nil {
 			return err
 		}
