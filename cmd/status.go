@@ -40,7 +40,14 @@ var statusCmd = &cobra.Command{
 			return err
 		}
 
-		fmt.Print("Deployment status: " + status)
+		stats, err := project.Statistics(userCfg.GetString("server"), userCfg.GetString("jwt"))
+		if err != nil {
+			return err
+		}
+
+		fmt.Println("Deployment status: " + status)
+		fmt.Printf("CPU usage: %.2f%%\n", stats.CPUUsage)
+		fmt.Printf("Memory usage: %dMB (limit: %dMB)\n", stats.MemoryUsage/(1024*1024), stats.MemoryLimit/(1024*1024))
 		return nil
 	},
 }

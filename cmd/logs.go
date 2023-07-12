@@ -12,7 +12,7 @@ import (
 var logsCmd = &cobra.Command{
 	GroupID: "deployment",
 	Use:     "logs",
-	Short:   "Get logs from a project",
+	Short:   "Get logs from a deployment",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		fmt.Println("Deployment logs:")
 
