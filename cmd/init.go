@@ -5,23 +5,79 @@ import (
 	"fmt"
 
 	"github.com/go-git/go-git/v5"
+	gitconf "github.com/go-git/go-git/v5/config"
+	"github.com/paastech-cloud/cli/internal/config"
 	"github.com/paastech-cloud/cli/pkg/project"
 	"github.com/spf13/cobra"
 )
 
 var initCmd = &cobra.Command{
 	GroupID: "project",
-	Use:     "init",
+	Use:     "init [Project Name]",
 	Short:   "Initialize a project",
+	Args:    cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		fmt.Println("Initializing a new project")
 
-		git, err := git.PlainOpen(".")
+		// Check if current directory is a git repo
+		repo, err := git.PlainOpen(".")
 		if err != nil {
-			return errors.New("no git repository found in current directory")
+			return errors.New("No git repository found in current directory")
 		}
 
-		return project.InitProject(git)
+		// Load User config
+		userCfg, err := config.LoadAuthConfig()
+		if err != nil {
+			return err
+		}
+
+		// Check if user is authenticated
+		connected, err := config.IsAuthenticated(userCfg)
+		if err != nil {
+			return err
+		}
+		if !connected {
+			return errors.New("Not logged in")
+		}
+
+		// Check if project exists
+		if config.ProjectExists() {
+			return errors.New("Project already exists")
+		}
+
+		// Create project
+		project, err := project.CreateProject(userCfg.GetString("server"), userCfg.GetString("jwt"), args[0])
+		if err != nil {
+			return err
+		}
+
+		// Create project conf
+		err = config.CreateProjectConfig()
+		if err != nil {
+			return err
+		}
+
+		// Load project config
+		projCfg, err := config.LoadProjectConfig()
+		if err != nil {
+			return err
+		}
+
+		// Write config
+		projCfg.Set("project", project)
+		projCfg.WriteConfig()
+
+		// Add remote for paastech push
+		_, err = repo.CreateRemote(&gitconf.RemoteConfig{
+			Name: "paastech",
+			URLs: []string{"ssh://git.paastech.cloud:8080/" + project.Id},
+		})
+		if err != nil {
+			return err
+		}
+
+		fmt.Println("Project " + project.Name + " created.")
+		return nil
 	},
 }
 

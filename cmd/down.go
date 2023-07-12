@@ -9,11 +9,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var statusCmd = &cobra.Command{
+var downCmd = &cobra.Command{
 	GroupID: "deployment",
-	Use:     "status",
-	Short:   "Get status of a deployment",
+	Use:     "down",
+	Short:   "Stop a deployment",
 	RunE: func(cmd *cobra.Command, args []string) error {
+		fmt.Println("Stopping deployment")
+
 		userCfg, err := config.LoadAuthConfig()
 		if err != nil {
 			return err
@@ -35,23 +37,17 @@ var statusCmd = &cobra.Command{
 		var project project.Project
 		projCfg.UnmarshalKey("project", &project)
 
-		status, err := project.Status(userCfg.GetString("server"), userCfg.GetString("jwt"))
+		err = project.Down(userCfg.GetString("server"), userCfg.GetString("jwt"))
 		if err != nil {
 			return err
 		}
 
-		stats, err := project.Statistics(userCfg.GetString("server"), userCfg.GetString("jwt"))
-		if err != nil {
-			return err
-		}
+		fmt.Println("Project successfully stopped")
 
-		fmt.Println("Deployment status: " + status)
-		fmt.Printf("CPU usage: %.2f%%\n", stats.CPUUsage)
-		fmt.Printf("Memory usage: %dMB (limit: %dMB)\n", stats.MemoryUsage/(1024*1024), stats.MemoryLimit/(1024*1024))
 		return nil
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(statusCmd)
+	rootCmd.AddCommand(downCmd)
 }

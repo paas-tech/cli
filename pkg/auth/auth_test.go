@@ -28,7 +28,7 @@ func TestLogin(t *testing.T) {
 		}
 
 		// Send a mock response
-		response := `{"accessToken":"mockAccessToken"}`
+		response := `{"status":"OK","content":{"accessToken":"mockAccessToken"}}`
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(response))
 	}))

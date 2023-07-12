@@ -16,55 +16,46 @@ type JWTInfos struct {
 	ExpirationTime time.Time
 }
 
-// Set and return auth config as config file
-func authConfigFile() string {
+// Load the auth config (jwt) from $HOME/.config/paastech/auth.yaml
+func LoadAuthConfig() (*viper.Viper, error) {
 	// Define config path
 	authConfigFile := filepath.Join(os.Getenv("HOME"), ".config", "paastech", "auth.yaml")
-	viper.SetConfigFile(authConfigFile)
-	viper.ReadInConfig()
-	return authConfigFile
-}
-
-// Load the auth config (jwt) from $HOME/.config/paastech/auth.yaml
-func LoadAuthConfig() error {
-	// Set auth config file as config
-	authConfigFile := authConfigFile()
+	cfg := viper.New()
 
 	// Check if the auth.yaml file exists, if not, create it
 	if _, err := os.Stat(authConfigFile); os.IsNotExist(err) {
-		err = createAuthConfig(authConfigFile)
+		err = createAuthConfig(cfg, authConfigFile)
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
 
+	cfg.SetConfigFile(authConfigFile)
 	// Read config from file
-	err := viper.ReadInConfig()
+	err := cfg.ReadInConfig()
 	if err != nil {
-		return errors.New("Failed to read user config file")
+		return nil, errors.New("Failed to read user config file")
 	}
 
-	return nil
+	return cfg, nil
 }
 
-// Set the jwt in config file
-func SetAuth(server string, jwt string) {
-	// Set auth config file as config
-	authConfigFile()
+// Returns a boolean based on if the user is logged in
+func IsAuthenticated(cfg *viper.Viper) (bool, error) {
+	jwt, err := ExtractJWTInfos(cfg)
+	if err != nil {
+		return false, err
+	}
 
-	// Change server and jwt value in config file
-	viper.Set("server", server)
-	viper.Set("jwt", jwt)
-	viper.WriteConfig()
+	timeDiff := jwt.ExpirationTime.Sub(time.Now())
+
+	return timeDiff > 0, nil
 }
 
 // Extract payload from jwt and return it as UserInfos struct
-func ExtractJWTInfos() (JWTInfos, error) {
-	// Set auth config file as config
-	authConfigFile()
-
+func ExtractJWTInfos(cfg *viper.Viper) (JWTInfos, error) {
 	// Get jwt from config
-	tokenString := viper.GetString("jwt")
+	tokenString := cfg.GetString("jwt")
 	if tokenString == "" {
 		return JWTInfos{}, errors.New("Not logged in")
 	}
@@ -84,7 +75,7 @@ func ExtractJWTInfos() (JWTInfos, error) {
 }
 
 // Create the auth config file in the home config directory
-func createAuthConfig(path string) error {
+func createAuthConfig(cfg *viper.Viper, path string) error {
 	// Create the $HOME/.config/paastech directory if it doesn't exist
 	err := os.MkdirAll(filepath.Dir(path), 0755)
 	if err != nil {
@@ -92,9 +83,9 @@ func createAuthConfig(path string) error {
 	}
 
 	// Write config with no real value
-	viper.Set("jwt", "")
-	viper.Set("server", "")
-	err = viper.WriteConfigAs(path)
+	cfg.Set("jwt", "")
+	cfg.Set("server", "")
+	err = cfg.WriteConfigAs(path)
 	if err != nil {
 		return err
 	}

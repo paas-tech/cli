@@ -10,17 +10,19 @@ import (
 var logoutCmd = &cobra.Command{
 	GroupID: "account",
 	Use:     "logout",
-	Short:   "Log out from PaaSTech.cloud",
-	Long:    "Log out from PaaSTech.cloud",
+	Short:   "Log out from PaaSTech",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// Load auth config
-		err := config.LoadAuthConfig()
+		userCfg, err := config.LoadAuthConfig()
 		if err != nil {
 			return err
 		}
 
 		// Save empty jwt in auth conf
-		config.SetAuth("", "")
+		userCfg.Set("server", "")
+		userCfg.Set("jwt", "")
+		userCfg.WriteConfig()
+
 		fmt.Println("🚪 Logging out")
 
 		return nil

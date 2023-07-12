@@ -54,13 +54,16 @@ var loginCmd = &cobra.Command{
 		}
 
 		// Load auth config
-		err = config.LoadAuthConfig()
+		userCfg, err := config.LoadAuthConfig()
 		if err != nil {
 			return err
 		}
 
 		// Save jwt in auth conf
-		config.SetAuth(server, jwt)
+		userCfg.Set("server", server)
+		userCfg.Set("jwt", jwt)
+		userCfg.WriteConfig()
+
 		fmt.Println("✅ Login successful")
 
 		return nil

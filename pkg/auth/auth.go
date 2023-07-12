@@ -14,7 +14,9 @@ type loginRequest struct {
 }
 
 type loginResponse struct {
-	AccessToken string `json:"accessToken"`
+	Content struct {
+		AccessToken string `json:"accessToken"`
+	} `json:"content"`
 }
 
 // Send a login request to the PaasTech API and returns the Access Token if successful
@@ -48,5 +50,5 @@ func Login(baseURL string, email string, password string) (string, error) {
 		return "", err
 	}
 
-	return jwt.AccessToken, err
+	return jwt.Content.AccessToken, err
 }
