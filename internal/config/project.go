@@ -71,7 +71,7 @@ func CreateProjectConfig() error {
 	// Default buildpacks config
 	cfg.Set("buildpacks", BuildpackConfig{
 		Path:      ".",
-		Builder:   "heroku/builder:22",
+		Builder:   "paketobuildpacks/builder:full",
 		Buildpack: "",
 		Env:       []string{},
 	})
