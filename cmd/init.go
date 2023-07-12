@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/go-git/go-git/v5"
+	gitconf "github.com/go-git/go-git/v5/config"
 	"github.com/paastech-cloud/cli/internal/config"
 	"github.com/paastech-cloud/cli/pkg/project"
 	"github.com/spf13/cobra"
@@ -19,7 +20,7 @@ var initCmd = &cobra.Command{
 		fmt.Println("Initializing a new project")
 
 		// Check if current directory is a git repo
-		_, err := git.PlainOpen(".")
+		repo, err := git.PlainOpen(".")
 		if err != nil {
 			return errors.New("No git repository found in current directory")
 		}
@@ -65,6 +66,15 @@ var initCmd = &cobra.Command{
 		// Write config
 		projCfg.Set("project", project)
 		projCfg.WriteConfig()
+
+		// Add remote for paastech push
+		_, err = repo.CreateRemote(&gitconf.RemoteConfig{
+			Name: "paastech",
+			URLs: []string{"ssh://git.paastech.cloud:8080/" + project.Id},
+		})
+		if err != nil {
+			return err
+		}
 
 		fmt.Println("Project " + project.Name + " created.")
 		return nil
