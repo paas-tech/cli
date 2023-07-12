@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"github.com/paastech-cloud/cli/pkg/utils"
 )
@@ -53,9 +54,16 @@ var status = map[string]string{
 
 // Deploy a project to PaaSTech
 func (p *Project) Deploy(baseURL string, accessToken string, envVars map[string]string) error {
+	// Dirty fix for ENV since viper is case insensitive
+	upperCaseVars := make(map[string]string)
+	for key, value := range envVars {
+		uppercaseKey := strings.ToUpper(key)
+		upperCaseVars[uppercaseKey] = value
+	}
+
 	// Create JSON request body
 	request, err := json.Marshal(projectDeployRequest{
-		EnvVars: envVars,
+		EnvVars: upperCaseVars,
 	})
 	if err != nil {
 		return err
